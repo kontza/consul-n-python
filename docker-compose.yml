@@ -1,0 +1,56 @@
+version: '3.8'
+
+networks:
+  consul-net:
+
+services:
+  order:
+    networks:
+      - consul-net
+    build:
+      context: flask-app
+      dockerfile: ../dockerfile-python
+    ports:
+      - ${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}
+    environment:
+      SERVICE_NAME: Order
+      SERVICE_PORT: "${ORDER_SERVICE_PORT}"
+      UPSTREAM_SERVICE: invoice
+    depends_on:
+      - consul
+
+  invoice:
+    networks:
+      - consul-net
+    build:
+      context: flask-app
+      dockerfile: ../dockerfile-python
+    ports:
+      - "${INVOICE_SERVICE_PORT}:${INVOICE_SERVICE_PORT}"
+    environment:
+      SERVICE_NAME: Invoice
+      SERVICE_PORT: "${INVOICE_SERVICE_PORT}"
+      UPSTREAM_SERVICE: tax
+    depends_on:
+      - consul
+
+  tax:
+    networks:
+      - consul-net
+    build:
+      context: flask-app
+      dockerfile: ../dockerfile-python
+    ports:
+      - "${TAX_SERVICE_PORT}:${TAX_SERVICE_PORT}"
+    environment:
+      SERVICE_NAME: Tax
+      SERVICE_PORT: "${TAX_SERVICE_PORT}"
+    depends_on:
+      - consul
+
+  consul:
+    networks:
+      - consul-net
+    image: consul
+    ports:
+      - 8500:8500

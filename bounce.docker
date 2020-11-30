@@ -1,0 +1,1 @@
+for OP in down build up;docker-compose $OP;end
