@@ -38,13 +38,13 @@ services:
     networks:
       - consul-net
     build:
-      context: flask-app
-      dockerfile: ../dockerfile-python
+      context: tax
+      dockerfile: ../dockerfile-spring-boot
     ports:
       - "${TAX_SERVICE_PORT}:${TAX_SERVICE_PORT}"
     environment:
-      SERVICE_NAME: Tax
-      SERVICE_PORT: "${TAX_SERVICE_PORT}"
+      SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: "${TAX_SERVICE_PORT}"
     depends_on:
       - consul
 

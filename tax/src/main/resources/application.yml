@@ -1,0 +1,6 @@
+server:
+  port: 6000
+management:
+  endpoint:
+    health:
+      enabled: true

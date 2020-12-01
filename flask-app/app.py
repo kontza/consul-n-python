@@ -13,8 +13,13 @@ if logger_name is None:
 logger = logging.getLogger(logger_name)
 
 
+@app.route("/health")
+def get_health():
+    return json.dumps({"status": "UP"})
+
+
 @app.route("/")
-def get_invoice():
+def get_handler():
     service_name = os.environ.get("SERVICE_NAME")
     logger.warning(f"Service name = {service_name}")
     payload = json.dumps({"service": service_name, "version": 1.0})
@@ -31,7 +36,7 @@ def get_invoice():
 def register(client):
     port = os.environ.get("SERVICE_PORT")
     service_name = os.environ.get("SERVICE_NAME").lower()
-    check_http = consul.Check.http(f"http://{service_name}:{port}", interval="5s")
+    check_http = consul.Check.http(f"http://{service_name}:{port}/health", interval="5s")
     while True:
         try:
             client.agent.service.register(

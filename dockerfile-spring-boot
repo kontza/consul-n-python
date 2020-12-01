@@ -1,0 +1,12 @@
+FROM maven:3-openjdk-11-slim AS build-env
+WORKDIR /usr/src/app
+ADD pom.xml /usr/src/app/
+RUN mvn dependency:go-offline
+
+COPY src/ /usr/src/app/src
+RUN mvn package -DskipTests
+
+FROM gcr.io/distroless/java:11
+COPY --from=build-env /usr/src/app/target/tax-*.jar /app/main.jar
+WORKDIR /app
+CMD ["main.jar"]
